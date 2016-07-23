@@ -1,15 +1,4 @@
-html, body {
-	height: 100%;
-	font-family: arial, verdana, sans-serif;
-	padding:0;
-	margin:0;
-}
-
-header {
-	background: #333;
-	color:#e5e5e5;
-}
-
+@import "variables";
 @import "containers";
 @import "colors";
 @import "animations";

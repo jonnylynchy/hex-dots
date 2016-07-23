@@ -1,5 +1,10 @@
 import AlottaDotties from './AlottaDotties';
 import './styles/main.scss';
 
-const game = new AlottaDotties();
-game.attachEvents();
+document.addEventListener('DOMContentLoaded', function(e){
+	const game = new AlottaDotties();
+});
+
+// window.addEventListener('onload', function(e){
+// 	const game = new AlottaDotties();
+// });

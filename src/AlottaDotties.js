@@ -1,12 +1,23 @@
 export default class AlottaDotties {
     constructor() {
-        this.messageDiv = document.querySelector(".message");
+        this.init();
+    }
+
+	init(){
+		this.messageDiv = document.querySelector(".message");
         this.scoreDiv = document.querySelector(".score");
         this.colors = ['yellow', 'red', 'green', 'blue', 'purple'];
         this.dotDivs = [];
         this.stage = document.querySelector(".stage");
         this.stage.draggable = false;
-        this.dots = Math.floor(this.stage.clientWidth * this.stage.clientHeight / (60 * 60) * 2);
+		this.stage.style.width = window.innerWidth / 2 + 'px';
+		this.stage.style.height = (window.innerHeight / 100) * 80  + 'px';
+
+		// Grid (Columns * Rows)
+		this.columns = Math.floor(this.stage.clientWidth/40);
+		this.rows = Math.floor(this.stage.clientHeight/40);
+		this.dots = this.columns * this.rows;
+
         this.totalDots = 0;
         this.score = 0;
 		this.mouseIsDown = false;
@@ -40,7 +51,8 @@ export default class AlottaDotties {
         }
 
         this.canvas = this.createCanvas();
-    }
+		this.attachEvents();
+	}
 
     createCanvas() {
         const canvas = document.createElement('canvas'),

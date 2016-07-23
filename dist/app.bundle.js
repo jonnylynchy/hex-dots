@@ -71,33 +71,6 @@
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	/*
-		Author: Jon Lynch (http://www.thejonlynch.com)
-		Original Created Date: 	7/22/2016
-
-		Description:
-		This is just a fun little experiment with ES6, CSS & Canvas.
-		No frameworks are currently used. Just vanilla js.
-		It's a work in progress and I realize there's a lot of crap in the JS below.
-		Feel free to fork and pitch in!
-
-		Inspired by dots! (ios and android game)
-
-		TODO:
-		- Add: nice webfont
-		- Add: better messaging
-		- Add: animated lines
-		- Add: exception/error handling
-		- Add: target score, keep adding dots until score is reached
-		- Add: timer option (game is over when time is up)
-		- Add: reset button
-		- Add: game over message
-		- Adjust: dots on page to be evenly distributed filling entire stage
-		- Adjust: disable the ability to connect dots that are not adjacent
-		- Refactor: break up configuration, sounds, etc. into modules and import them.
-		- Refactor: attaching events (serparate into method calls)
-		- Ultra-Awesome: Port this into a react app. Rendering via virtual dom would be super fast.
-	*/
 	var AlottaDotties = function () {
 	    function AlottaDotties() {
 	        _classCallCheck(this, AlottaDotties);
@@ -108,7 +81,8 @@
 	        this.dotDivs = [];
 	        this.stage = document.querySelector(".stage");
 	        this.stage.draggable = false;
-	        this.dots = Math.floor(this.stage.clientWidth * this.stage.clientHeight / (60 * 60) * 2);
+	        console.log(this.stage);
+	        this.dots = Math.floor(this.stage.innerWidth * this.stage.innerHeight / 60);
 	        this.totalDots = 0;
 	        this.score = 0;
 	        this.mouseIsDown = false;
