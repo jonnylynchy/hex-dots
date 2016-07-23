@@ -6,7 +6,7 @@ This game is inspired by dots.
 ### Description
 This is just a fun little experiment with ES6, CSS & Canvas.
 No frameworks are currently used. Just vanilla js.
-It's a work in progress and I realize there's a lot of crap in the JS below.
+It's a work in progress and there are lots of TODO's.
 Feel free to fork and pitch in!
 
 ### TODO:
