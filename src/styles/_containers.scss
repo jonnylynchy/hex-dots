@@ -1,0 +1,53 @@
+.message {
+	padding: 25px;
+	text-align:center;
+	font-size: 25px;
+}
+
+.score {
+	float:left;
+	background:#fff;
+	color: #333;
+	padding: 25px;
+	font-size: 25px;
+}
+
+.stage {
+	width: 50%;
+	min-height: 80%;
+	background: #fff;
+	margin: 20px auto;
+	position: relative;
+}
+
+.dot {
+	width: 20px;
+	height: 20px;
+	-moz-border-radius: 50%;
+	-webkit-border-radius: 50%;
+	border-radius: 50%;
+	margin: 10px;
+	display: inline-block;
+	background: #e5e5e5;
+	z-index: 1;
+	position: relative;
+
+	&:active {
+		transform: scale(1.2, 1.2);
+	}
+	&:hover {
+		animation: pulsate 1s ease-out;
+    	animation-iteration-count: infinite;
+	}
+	&.marked{
+		border:1px solid #888;
+	}
+}
+
+canvas {
+  position: absolute;
+  z-index: 0;
+  background: #fff;
+  top:0;
+  left:0;
+}
