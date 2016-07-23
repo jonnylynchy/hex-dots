@@ -1,5 +1,6 @@
 # alotta-dotties
-Game written in Javascript (ES2015), HTML, CSS, Canvas
+Game written in Javascript (ES2015), HTML, CSS, Canvas.
+
 This game is inspired by dots.
 
 ### Description
