@@ -23,6 +23,7 @@
     "webpack": "^1.13.1"
   },
   "dependencies": {
+    "alertify.js": "^1.0.12",
     "webpack-dev-server": "^1.14.1"
   }
 }

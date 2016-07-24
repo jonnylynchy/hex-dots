@@ -1,6 +1,6 @@
 html, body {
 	height: 100%;
-	font-family: arial, verdana, sans-serif;
+	font-family: 'Raleway', sans-serif;
 	padding:0;
 	margin:0;
 }
@@ -8,27 +8,36 @@ html, body {
 header {
 	background: $dark;
 	color: $light-gray;
+	position: relative;
+	height: 50px;
 }
 
 .message {
 	padding: 25px;
 	text-align:center;
 	font-size: 25px;
+	display:none;
 }
 
 .score {
-	float:left;
 	background: $light;
 	color: $dark;
 	padding: 25px;
-	font-size: 25px;
+	font-size: 35px;
+	border-radius: 50%;
+	text-align:center;
+	width:50px;
+	margin: auto;
+	position:relative;
+	top:15px;
+	border:1px solid $light-gray;
 }
 
 .stage {
 	width: 50%;
 	min-height: 80%;
 	background: $light;
-	margin: 20px auto;
+	margin: 70px auto 20px;
 	position: relative;
 }
 

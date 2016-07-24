@@ -1,16 +1,17 @@
+var alertify = require('alertify.js');
+
 export default class AlottaDotties {
     constructor() {
         this.init();
     }
 
 	init(){
-		this.messageDiv = document.querySelector(".message");
         this.scoreDiv = document.querySelector(".score");
+		this.stage = document.querySelector(".stage");
         this.colors = ['yellow', 'red', 'green', 'blue', 'purple'];
         this.dotDivs = [];
 		this.dotSize = 25;
 		this.dotPadding = 20;
-        this.stage = document.querySelector(".stage");
         this.stage.draggable = false;
 		this.stage.style.width = window.innerWidth / 2 + 'px';
 		this.stage.style.height = (window.innerHeight / 100) * 80  + 'px';
@@ -22,10 +23,12 @@ export default class AlottaDotties {
         this.lineGroup = [];
 
         this.messages = {
+			startupMessage: "Let's play Alotta-Dotties!",
             successMessage: "Aww yayuh boyee!",
             errorMessage: "Hey, you can't do that silly!",
             squareMessage: "Great Job!"
         }
+
         this.sounds = {
             successSound: 'https://www.freesound.org/data/previews/317/317480_4766646-lq.mp3',
             errorSound: 'https://www.freesound.org/data/previews/344/344687_6211528-lq.mp3',
@@ -76,6 +79,8 @@ export default class AlottaDotties {
 			position.top += dotPixels;
 			rows--;
         }
+
+		this.showMessage(this.messages.startupMessage);
 	}
 
     updateScore(num) {
@@ -118,6 +123,21 @@ export default class AlottaDotties {
         this.canvas.ctx.clearRect(0, 0, this.canvas.canvas.width, this.canvas.canvas.height);
     }
 
+	showMessage(message){
+		alertify.logPosition("top left");
+		alertify.log(message);
+	}
+
+	showSuccessMessage(message){
+		alertify.logPosition("top left");
+		alertify.success(message);
+	}
+
+	showErrorMessage(message){
+		alertify.logPosition("top right");
+		alertify.error(message);
+	}
+
     attachEvents() {
         this.stage.addEventListener('mouseup', function(e) {
             if (this.targetGroup.length > 1 && this.mouseIsDown && this.areDotsTheSame(this.targetGroup)) {
@@ -137,16 +157,17 @@ export default class AlottaDotties {
 
                 // Show messasge, if square, remove all of color
                 if (!isSquare) {
-                    this.messageDiv.innerHTML = msg + ' You got ' + num + ' dotties!';
+					let success = msg + ' You got ' + num + ' dotties!'
+					this.showSuccessMessage(success);
 					this.playSound(this.sounds.successSound, 1);
                 } else {
-                    this.messageDiv.innerHTML = this.messages.squareMessage;
+					this.showSuccessMessage(this.messages.squareMessage);
 					this.playSound(this.sounds.squareSound, 0, 1500);
 					this.removeColor(squareColor);
                 }
 
             } else {
-                this.messageDiv.innerHTML = this.messages.errorMessage;
+				this.showErrorMessage(this.messages.errorMessage);
                 this.playSound(this.sounds.errorSound, 0);
             }
             this.clearLines();
