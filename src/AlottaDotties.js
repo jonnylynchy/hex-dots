@@ -89,7 +89,7 @@ export default class AlottaDotties {
     }
 
     setSoundsStop(time) {
-        setTimeout(function() {
+        setTimeout(function soundTimeout() {
             this.stopSounds()
         }.bind(this), time);
     }
@@ -139,7 +139,7 @@ export default class AlottaDotties {
 	}
 
     attachEvents() {
-        this.stage.addEventListener('mouseup', function(e) {
+        this.stage.addEventListener('mouseup', function stageMouseUp(e) {
             if (this.targetGroup.length > 1 && this.mouseIsDown && this.areDotsTheSame(this.targetGroup)) {
                 let msg = this.messages.successMessage,
                     num = this.targetGroup.length;
@@ -151,7 +151,7 @@ export default class AlottaDotties {
                 this.updateScore(num);
 
                 // Remove connected dots
-                this.targetGroup.forEach(function(removeMe) {
+                this.targetGroup.forEach(function removeConnectedDots(removeMe) {
                     this.removeDot(removeMe);
                 }.bind(this));
 
@@ -192,7 +192,7 @@ export default class AlottaDotties {
 
 	addDotEvents(dot){
 		dot.addEventListener('mousedown',
-			function(e) {
+			function dotMouseDown(e) {
 				let y = e.target.offsetTop + this.dotSize/2,
 					x = e.target.offsetLeft + this.dotSize/2,
 					computedStyle = getComputedStyle(e.target, null),
@@ -206,7 +206,7 @@ export default class AlottaDotties {
 			}.bind(this),
 			false);
 		dot.addEventListener('mouseenter',
-			function(e) {
+			function dotMouseEnter(e) {
 				if (this.mouseIsDown) {
 					let y = e.target.offsetTop + this.dotSize/2,
 						x = e.target.offsetLeft + this.dotSize/2;
@@ -242,7 +242,7 @@ export default class AlottaDotties {
 
 	addAnimation(animation, dot) {
 		dot.className += ' ' + animation + ' animated';
-		setTimeout(function(){
+		setTimeout(function animationTimeout(){
 			this.removeAnimation(animation, dot);
 		}.bind(this), 1000);
 	}
@@ -263,19 +263,19 @@ export default class AlottaDotties {
         // Update Score and remove dots
         this.updateScore(dotsOfColor.length);
 
-        dotsOfColor.forEach(function(dot) {
+        dotsOfColor.forEach(function removeDots(dot) {
             this.removeDot(dot);
         }.bind(this));
 
     }
 
     areDotsTheSame(dots) {
-        let dotColors = dots.reduce(function(dotClasses, dot) {
+        let dotColors = dots.reduce(function reduceDotColors(dotClasses, dot) {
             dotClasses.push(dot.className.substring(4));
             return dotClasses;
         }, []);
 
-        return !!dotColors.reduce(function(a, b) {
+        return !!dotColors.reduce(function reduceEqualColors(a, b) {
             return (a === b) ? a : NaN;
         });
     }
@@ -284,7 +284,7 @@ export default class AlottaDotties {
         if (dots.length !== 4)
             return false;
 
-        let vectorArray = dots.map(function(dot) {
+        let vectorArray = dots.map(function mapDotPositions(dot) {
             return {
                 top: dot.offsetTop,
                 left: dot.offsetLeft
