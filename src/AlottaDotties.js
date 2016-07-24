@@ -8,15 +8,12 @@ export default class AlottaDotties {
         this.scoreDiv = document.querySelector(".score");
         this.colors = ['yellow', 'red', 'green', 'blue', 'purple'];
         this.dotDivs = [];
+		this.dotSize = 25;
+		this.dotPadding = 20;
         this.stage = document.querySelector(".stage");
         this.stage.draggable = false;
 		this.stage.style.width = window.innerWidth / 2 + 'px';
 		this.stage.style.height = (window.innerHeight / 100) * 80  + 'px';
-
-		// Grid (Columns * Rows)
-		this.columns = Math.floor(this.stage.clientWidth/40);
-		this.rows = Math.floor(this.stage.clientHeight/40);
-		this.dots = this.columns * this.rows;
 
         this.totalDots = 0;
         this.score = 0;
@@ -39,16 +36,7 @@ export default class AlottaDotties {
         this.audio.src = this.sounds.successSound;
         this.audio.load();
 
-        while (this.dots) {
-            let dot = document.createElement('div');
-            let colorIdx = Math.ceil(Math.random() * (this.colors.length) - 1);
-            let color = this.colors[colorIdx];
-            dot.className = 'dot ' + color;
-            dot.draggable = false;
-            this.stage.appendChild(dot);
-            this.dotDivs.push(dot);
-            this.dots--;
-        }
+		this.addDotsToStage();
 
         this.canvas = this.createCanvas();
 		this.attachEvents();
@@ -67,6 +55,28 @@ export default class AlottaDotties {
             canvas: canvas
         };
     }
+
+	addDotsToStage(){
+		// Grid (Columns * Rows)
+		let dotPixels = this.dotSize + this.dotPadding + 10;
+		let columns = Math.floor(this.stage.clientWidth/dotPixels);
+		let rows = Math.floor(this.stage.clientHeight/dotPixels);
+
+		let position = {top: 0, left: 0};
+
+		while (rows) {
+			let colNum = columns;
+			while (colNum > 0) {
+				this.addDot(position);
+				position.left += dotPixels;
+				colNum--;
+			}
+
+			position.left = 0;
+			position.top += dotPixels;
+			rows--;
+        }
+	}
 
     updateScore(num) {
         this.score += num;
@@ -122,7 +132,7 @@ export default class AlottaDotties {
 
                 // Remove connected dots
                 this.targetGroup.forEach(function(removeMe) {
-                    this.stage.removeChild(removeMe);
+                    this.removeDot(removeMe);
                 }.bind(this));
 
                 // Show messasge, if square, remove all of color
@@ -143,39 +153,88 @@ export default class AlottaDotties {
             this.targetGroup = [];
             this.mouseIsDown = false;
         }.bind(this));
-
-        this.dotDivs.forEach(function(dot) {
-            dot.addEventListener('mousedown',
-                function(e) {
-					let y = e.target.offsetTop + 10,
-						x = e.target.offsetLeft + 10,
-						computedStyle = getComputedStyle(e.target, null),
-						color = computedStyle.backgroundColor;
-
-					this.mouseIsDown = true;
-                    this.targetGroup.push(e.target);
-                    e.preventDefault();
-                    this.startDrawLine(x, y, color);
-
-                }.bind(this),
-                false);
-            dot.addEventListener('mouseenter',
-                function(e) {
-                    if (this.mouseIsDown) {
-						let y = e.target.offsetTop + 10,
-							x = e.target.offsetLeft + 10;
-
-						if (!this.targetGroup.includes(e.target)) {
-                            this.targetGroup.push(e.target);
-                        }
-
-                        this.completeLine(x, y);
-                    }
-                    e.preventDefault();
-                }.bind(this),
-                false);
-        }.bind(this));
     }
+
+	removeDot(dot) {
+		let position = {
+				top: parseInt(dot.style.top, 10),
+				left: parseInt(dot.style.left, 10)
+			},
+			dotIndex = this.dotDivs.indexOf(dot);
+
+
+		this.stage.removeChild(dot);
+		this.dotDivs.splice(dotIndex, 1);
+
+		this.addDot(position);
+	}
+
+	addDotEvents(dot){
+		dot.addEventListener('mousedown',
+			function(e) {
+				let y = e.target.offsetTop + this.dotSize/2,
+					x = e.target.offsetLeft + this.dotSize/2,
+					computedStyle = getComputedStyle(e.target, null),
+					color = computedStyle.backgroundColor;
+
+				this.mouseIsDown = true;
+				this.targetGroup.push(e.target);
+				e.preventDefault();
+				this.startDrawLine(x, y, color);
+
+			}.bind(this),
+			false);
+		dot.addEventListener('mouseenter',
+			function(e) {
+				if (this.mouseIsDown) {
+					let y = e.target.offsetTop + this.dotSize/2,
+						x = e.target.offsetLeft + this.dotSize/2;
+
+					if (!this.targetGroup.includes(e.target)) {
+						this.targetGroup.push(e.target);
+					}
+
+					this.completeLine(x, y);
+				}
+				e.preventDefault();
+			}.bind(this),
+			false);
+	}
+
+	addDot(position){
+		let dot = document.createElement('div');
+		let colorIdx = Math.ceil(Math.random() * (this.colors.length) - 1);
+		let color = this.colors[colorIdx];
+		dot.className = 'dot ' + color;
+		dot.draggable = false;
+		dot.style.left = position.left + 'px';
+		dot.style.top = position.top + 'px';
+		this.stage.appendChild(dot);
+		this.dotDivs.push(dot);
+		this.addDotEvents(dot);
+		this.addAnimation('zoomInDown', dot);
+	}
+
+	timedEvent(dot, funcName) {
+
+	}
+
+	addAnimation(animation, dot) {
+		dot.className += ' ' + animation + ' animated';
+		setTimeout(function(){
+			this.removeAnimation(animation, dot);
+		}.bind(this), 1000);
+	}
+
+	removeAnimation(animation, dot){
+		let dotClasses = dot.className.split(' ').filter(
+			function(classname){
+				return classname !== animation && classname !== 'animated';
+			}
+		);
+
+		dot.className = dotClasses.join(" ");
+	}
 
     removeColor(color) {
         let dotsOfColor = document.querySelectorAll('.' + color);
@@ -184,7 +243,7 @@ export default class AlottaDotties {
         this.updateScore(dotsOfColor.length);
 
         dotsOfColor.forEach(function(dot) {
-            this.stage.removeChild(dot);
+            this.removeDot(dot);
         }.bind(this));
 
     }

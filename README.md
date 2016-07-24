@@ -19,17 +19,23 @@ $ npm start
 
 Navigate to http://localhost:8080/dist/index.html
 
+#### How to play
+- Click and hold on any dot on the screen.
+- Drag to an adjacent dot of the same color.
+- You can chain dots together.
+- When you release the mouse, same color dots will be removed and your score will increase.
+- ... More features to come, see TODO.
+
 ### TODO:
 - Add: nice webfont
 - Add: better messaging
 - Add: animated lines
 - Add: exception/error handling
-- Add: target score, keep adding dots until score is reached
+- Add: target score
 - Add: timer option (game is over when time is up)
 - Add: reset button
 - Add: game over message
 - Adjust: disable the ability to connect dots that are not adjacent
 - Refactor: break up configuration, sounds, etc. into modules and import them.
-- Refactor: attaching events (separate into method calls)
-- Ultra-Awesome: Port this into a react app. Rendering via virtual dom would be super fast.
+- Ultra-Awesome: Port this into a react app. Rendering via virtual dom would be super fast. (react-canvas)
 - Make Mobile friendly.
