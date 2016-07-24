@@ -237,7 +237,7 @@ export default class AlottaDotties {
 	}
 
     removeColor(color) {
-        let dotsOfColor = document.querySelectorAll('.' + color);
+        let dotsOfColor = Array.from(document.querySelectorAll('.' + color));
 
         // Update Score and remove dots
         this.updateScore(dotsOfColor.length);
