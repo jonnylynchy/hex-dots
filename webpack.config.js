@@ -1,3 +1,11 @@
+var svgoConfig = JSON.stringify({
+	plugins: [
+		{removeTitle: true},
+		{convertColors: {shorthex: false}},
+		{convertPathData: false}
+	]
+});
+
 module.exports = {
     entry: './src/app.js',
     output: {
@@ -25,9 +33,11 @@ module.exports = {
                 loaders: ["style", "css", "sass"]
             },
 			{
-                test: /\.svg$/,
-                loaders: ["file"]
-            }
+	        test: /\.svg$/,
+	            loaders: [
+	                'file-loader'
+	            ]
+	        }
         ]
     },
 

@@ -1,11 +1,21 @@
-var express = require('express');
-var app = express();
+var compression = require('compression'),
+	express = require('express'),
+	app = express(),
+	serveStatic = require('serve-static');
 
 app.set('port', process.env.PORT || 3000);
 
-app.use(express.logger('dev'));
-app.use(express.compress());
-app.use(express.static(__dirname + '/dist'));////
+app.use(compression());
+app.use(serveStatic('dist', {
+	'index': ['index.html', 'default.htm'],
+	setHeaders: setCustomCacheControl
+}));
+app.listen(app.get('port'));
 
-app.listen(app.get('port'), function() {
-});
+function setCustomCacheControl (res, path) {
+	console.log(serveStatic.mime.lookup(path));
+	// if (serveStatic.mime.lookup(path) === 'text/html') {
+	//   // Custom Cache-Control for HTML files
+	//   res.setHeader('Cache-Control', 'public, max-age=0')
+	// }
+}
