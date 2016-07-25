@@ -13,8 +13,8 @@ export default class AlottaDotties {
 		this.dotSize = 25;
 		this.dotPadding = 20;
         this.stage.draggable = false;
-		this.stage.style.width = window.innerWidth / 2 + 'px';
-		this.stage.style.height = (window.innerHeight / 100) * 80  + 'px';
+		this.stage.style.width = (window.innerWidth / 100) * 75 + 'px';
+		this.stage.style.height = (window.innerHeight / 100) * 70  + 'px';
 
         this.totalDots = 0;
         this.score = 0;
@@ -163,6 +163,7 @@ export default class AlottaDotties {
 	}
 
     attachEvents() {
+
         this.stage.addEventListener('mouseup', function stageMouseUp(e) {
             if (this.targetGroup.length > 1 && this.mouseIsDown && this.areDotsTheSame(this.targetGroup)) {
                 let msg = this.messages.successMessage,
@@ -215,6 +216,28 @@ export default class AlottaDotties {
 	}
 
 	addDotEvents(dot){
+
+		// Mobile Test
+		dot.addEventListener('touchenter',
+			function dotMouseEnter(e) {
+				console.log('mobile touch enter');
+			}.bind(this),
+		false);
+
+		dot.addEventListener('touchstart',
+			function dotMouseDown(e) {
+				console.log('mobile touch start');
+			}.bind(this),
+		false);
+
+		dot.addEventListener('touchend',
+			function dotMouseDown(e) {
+				console.log('mobile touch end');
+			}.bind(this),
+		false);
+
+		// end mobile test
+
 		dot.addEventListener('mousedown',
 			function dotMouseDown(e) {
 				let y = e.target.offsetTop + this.dotSize/2,

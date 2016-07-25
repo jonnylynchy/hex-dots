@@ -3,6 +3,7 @@ html, body {
 	font-family: 'Raleway', sans-serif;
 	padding:0;
 	margin:0;
+	overflow-y: hidden;
 }
 
 header {
@@ -19,23 +20,46 @@ header {
 	display:none;
 }
 
+
+.hex:before {
+    content: " ";
+    width: 0; height: 0;
+    border-bottom: 30px solid $dark;
+    border-left: 52px solid transparent;
+    border-right: 52px solid transparent;
+    position: absolute;
+    top: -30px;
+}
+
+.hex {
+    margin-top: 30px;
+    width: 104px;
+    height: 60px;
+    position: relative;
+	background: $dark;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.hex:after {
+    content: "";
+    width: 0;
+    position: absolute;
+    bottom: -30px;
+    border-top: 30px solid $dark;
+    border-left: 52px solid transparent;
+    border-right: 52px solid transparent;
+}
+
 .score {
-	background: $light;
-	color: $dark;
-	padding: 25px;
-	font-size: 35px;
-	border-radius: 50%;
+	color: $light;
+	padding: 15px;
+	font-size: 30px;
 	text-align:center;
-	width:50px;
-	margin: auto;
-	position:relative;
-	top:15px;
-	border:1px solid $light-gray;
 }
 
 .stage {
-	width: 50%;
-	min-height: 80%;
+	width: 75%;
 	background: $light;
 	margin: 90px auto 20px;
 	position: relative;
