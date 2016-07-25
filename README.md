@@ -26,6 +26,8 @@ Navigate to http://localhost:8080/dist/index.html
 - When you release the mouse, same color dots will be removed and your score will increase.
 - ... More features to come, see TODO.
 
+[The latest version is up on Heroku]: https://alotta-dotties.herokuapp.com/
+
 ### TODO:
 - Add: nice webfont
 - Add: better messaging
