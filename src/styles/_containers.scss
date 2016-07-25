@@ -44,14 +44,13 @@ header {
 .dot {
 	width: 25px;
 	height: 25px;
-	-moz-border-radius: 50%;
-	-webkit-border-radius: 50%;
-	border-radius: 50%;
 	margin: 10px;
 	display: inline-block;
-	background: $light-gray;
+	color: $light-gray;
 	z-index: 1;
 	position: absolute;
+	font-size: 40px;
+	line-height: 20px;
 
 	&:active {
 		transform: scale(1.2, 1.2);
@@ -60,10 +59,13 @@ header {
 		animation: pulsate 1s ease-out;
     	animation-iteration-count: infinite;
 	}
-	&.marked{
+	&.marked {
 		border:1px solid $mid-gray;
 	}
 
+	&:before {
+		content: '\2B22';
+	}
 }
 
 canvas {

@@ -25,8 +25,8 @@ export default class AlottaDotties {
         this.messages = {
 			startupMessages: [
 				"Would you like to play a game?",
-				"Click and drag a dot to connect to other dots of the same color.",
-				"You can chain dots together for extra points.",
+				"Click and drag a hex dot to connect to other hex dots of the same color.",
+				"You can chain hex dots together for extra points.",
 				"If you connect 4 as a square, all dots of the same color will vanish!",
 				"Ready? Go!"
 			],
@@ -181,7 +181,7 @@ export default class AlottaDotties {
 
                 // Show messasge, if square, remove all of color
                 if (!isSquare) {
-					let success = msg + ' You got ' + num + ' dotties!'
+					let success = msg + ' You got ' + num + ' hex dots!'
 					this.showSuccessMessage(success);
 					this.playSound(this.sounds.successSound, 1);
                 } else {
@@ -220,12 +220,13 @@ export default class AlottaDotties {
 				let y = e.target.offsetTop + this.dotSize/2,
 					x = e.target.offsetLeft + this.dotSize/2,
 					computedStyle = getComputedStyle(e.target, null),
-					color = computedStyle.backgroundColor;
+					color = computedStyle.color,
+					textAdjustment = 5.5;
 
 				this.mouseIsDown = true;
 				this.targetGroup.push(e.target);
 				e.preventDefault();
-				this.startDrawLine(x, y, color);
+				this.startDrawLine(x + textAdjustment, y + 2, color);
 
 			}.bind(this),
 			false);
@@ -238,7 +239,8 @@ export default class AlottaDotties {
 						fullDot = Math.floor(this.dotSize + this.dotPadding),
 						lastDotRealY = parseInt(lastDot.style.top, 10) + this.dotSize/2,
 						lastDotRealX = parseInt(lastDot.style.left, 10) + this.dotSize/2,
-						paddingAdjustment = 20;
+						paddingAdjustment = 20,
+						textAdjustment = 5.5;
 
 					// if the previous dot is more than a dotsize away,
 					// don't connect this dot
@@ -250,7 +252,7 @@ export default class AlottaDotties {
 						if(!this.targetGroup.includes(e.target))
 							this.targetGroup.push(e.target);
 
-						this.completeLine(x, y);
+						this.completeLine(x + textAdjustment, y + 2);
 					}
 				}
 				e.preventDefault();
