@@ -244,12 +244,12 @@ export default class AlottaDotties {
 					x = e.target.offsetLeft + this.dotSize/2,
 					computedStyle = getComputedStyle(e.target, null),
 					color = computedStyle.color,
-					textAdjustment = 5.5;
+					textAdjustment = 4;
 
 				this.mouseIsDown = true;
 				this.targetGroup.push(e.target);
 				e.preventDefault();
-				this.startDrawLine(x + textAdjustment, y + 2, color);
+				this.startDrawLine(x + textAdjustment, y-1, color);
 
 			}.bind(this),
 			false);
@@ -263,7 +263,7 @@ export default class AlottaDotties {
 						lastDotRealY = parseInt(lastDot.style.top, 10) + this.dotSize/2,
 						lastDotRealX = parseInt(lastDot.style.left, 10) + this.dotSize/2,
 						paddingAdjustment = 20,
-						textAdjustment = 5.5;
+						textAdjustment = 4;
 
 					// if the previous dot is more than a dotsize away,
 					// don't connect this dot
@@ -275,7 +275,7 @@ export default class AlottaDotties {
 						if(!this.targetGroup.includes(e.target))
 							this.targetGroup.push(e.target);
 
-						this.completeLine(x + textAdjustment, y + 2);
+						this.completeLine(x + textAdjustment, y-1);
 					}
 				}
 				e.preventDefault();
