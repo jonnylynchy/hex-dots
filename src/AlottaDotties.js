@@ -23,10 +23,16 @@ export default class AlottaDotties {
         this.lineGroup = [];
 
         this.messages = {
-			startupMessage: "Let's play Alotta-Dotties!",
-            successMessage: "Aww yayuh boyee!",
-            errorMessage: "Hey, you can't do that silly!",
-            squareMessage: "Great Job!"
+			startupMessages: [
+				"Would you like to play a game?",
+				"Click and drag a dot to connect to other dots of the same color.",
+				"You can chain dots together for extra points.",
+				"If you connect 4 as a square, all dots of the same color will vanish!",
+				"Ready? Go!"
+			],
+            successMessage: "Nice.",
+            errorMessage: "Hey, you can't do that.",
+            squareMessage: "Great Job. You cleared a color."
         }
 
         this.sounds = {
@@ -80,7 +86,7 @@ export default class AlottaDotties {
 			rows--;
         }
 
-		this.showMessage(this.messages.startupMessage);
+		this.showStartUpMessages();
 	}
 
     updateScore(num) {
@@ -123,8 +129,9 @@ export default class AlottaDotties {
         this.canvas.ctx.clearRect(0, 0, this.canvas.canvas.width, this.canvas.canvas.height);
     }
 
-	showMessage(message){
+	showMessage(message, delay){
 		alertify.logPosition("top left");
+		alertify.delay(delay);
 		alertify.log(message);
 	}
 
@@ -136,6 +143,23 @@ export default class AlottaDotties {
 	showErrorMessage(message){
 		alertify.logPosition("top right");
 		alertify.error(message);
+	}
+
+	showStartUpMessages(){
+		let messages = this.messages.startupMessages,
+			messageDelay = 3500,
+			showDelay = 0;
+
+		alertify.logPosition("top left");
+		messages.forEach(function(message){
+			setTimeout(
+				function showStartUpMessage(){
+					this.showMessage(message, messageDelay);
+				}.bind(this),
+				showDelay
+			);
+			showDelay += messageDelay;
+		}.bind(this));
 	}
 
     attachEvents() {
@@ -209,13 +233,25 @@ export default class AlottaDotties {
 			function dotMouseEnter(e) {
 				if (this.mouseIsDown) {
 					let y = e.target.offsetTop + this.dotSize/2,
-						x = e.target.offsetLeft + this.dotSize/2;
+						x = e.target.offsetLeft + this.dotSize/2,
+						lastDot = this.targetGroup[this.targetGroup.length-1],
+						fullDot = Math.floor(this.dotSize + this.dotPadding),
+						lastDotRealY = parseInt(lastDot.style.top, 10) + this.dotSize/2,
+						lastDotRealX = parseInt(lastDot.style.left, 10) + this.dotSize/2,
+						paddingAdjustment = 20;
 
-					if (!this.targetGroup.includes(e.target)) {
-						this.targetGroup.push(e.target);
+					// if the previous dot is more than a dotsize away,
+					// don't connect this dot
+					if((y > lastDotRealY + (fullDot + paddingAdjustment)) || (y < lastDotRealY - (fullDot + paddingAdjustment))){
+						return false;
+					} else if((x > lastDotRealX + (fullDot + paddingAdjustment)) || (x < lastDotRealX - (fullDot + paddingAdjustment))){
+						return false;
+					} else {
+						if(!this.targetGroup.includes(e.target))
+							this.targetGroup.push(e.target);
+
+						this.completeLine(x, y);
 					}
-
-					this.completeLine(x, y);
 				}
 				e.preventDefault();
 			}.bind(this),
