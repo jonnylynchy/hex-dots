@@ -37,7 +37,22 @@ module.exports = {
 	            loaders: [
 	                'file-loader?name=[name].[ext]'
 	            ]
-	        }
+	        },
+			{
+			    test: /\.woff$/,
+			    loader: 'file-loader',
+			    query: {
+			        name: 'font/[hash].[ext]',
+			        limit: 5000,
+			        mimetype: 'application/font-woff'
+			    }
+			}, {
+			    test: /\.ttf$|\.eot$/,
+			    loader: 'file-loader',
+			    query: {
+			        name: 'font/[hash].[ext]'
+			    }
+			}
         ]
     },
 

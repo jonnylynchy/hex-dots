@@ -75,6 +75,7 @@ header {
 	position: absolute;
 	font-size: 40px;
 	line-height: 20px;
+	font-family: 'DejaVuSans';
 
 	&:active {
 		transform: scale(1.2, 1.2);
@@ -89,6 +90,7 @@ header {
 
 	&:before {
 		content: '\2B22';
+		font-family: 'DejaVuSans';
 	}
 }
 
