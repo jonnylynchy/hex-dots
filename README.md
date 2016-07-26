@@ -20,11 +20,12 @@ $ npm start
 Navigate to http://localhost:8080/dist/index.html
 
 #### How to play
-- Click and hold on any dot on the screen.
-- Drag to an adjacent dot of the same color.
-- You can chain dots together.
-- When you release the mouse, same color dots will be removed and your score will increase.
-- ... More features to come, see TODO.
+- Click and hold on any hexdot on the screen.
+- Drag to an adjacent hexdot of the same color.
+- You can chain hexdots together.
+- When you release the mouse, same color hexdots will be removed and your score will increase.
+- If you create a square, all of the hexdots of the same color will be removed.
+- ... More features to come, see TODO and issues.
 
 [The latest version is up on Heroku]
 [The latest version is up on Heroku]: https://hexdots.herokuapp.com/
