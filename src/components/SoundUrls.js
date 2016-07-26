@@ -1,8 +1,11 @@
 import botVoice from '../audio/bot-voice.mp3';
+import error from '../audio/error.mp3';
+import square from '../audio/square.mp3';
+import success from '../audio/success.mp3';
 
 export default {
-	successSound: 'https://www.freesound.org/data/previews/317/317480_4766646-lq.mp3',
-	errorSound: 'https://www.freesound.org/data/previews/344/344687_6211528-lq.mp3',
-	squareSound: 'https://www.freesound.org/data/previews/213/213659_862453-lq.mp3',
+	successSound: success,
+	errorSound: error,
+	squareSound: square,
 	robotVoice: botVoice
 }
