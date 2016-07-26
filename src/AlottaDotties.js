@@ -19,8 +19,15 @@ export default class AlottaDotties {
         this.totalDots = 0;
         this.score = 0;
 		this.mouseIsDown = false;
+		this.touchIsDown = false;
         this.targetGroup = [];
         this.lineGroup = [];
+
+		// Touch Events
+		this.touchStartX = 0;
+		this.touchStartY = 0;
+		this.touchTextAdjustmentY = -2;
+		this.touchTextAdjustmentX = 2;
 
         this.messages = {
 			startupMessages: [
@@ -49,14 +56,16 @@ export default class AlottaDotties {
 
         this.canvas = this.createCanvas();
 		this.attachEvents();
+		// TODO: add mobile check here (or better include mobile module if mobile);
+		this.attachMobileEvents();
 	}
 
     createCanvas() {
         const canvas = document.createElement('canvas'),
             ctx = canvas.getContext('2d');
 
-        canvas.width = this.stage.clientWidth;
-        canvas.height = this.stage.clientHeight;
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
         this.stage.appendChild(canvas);
 
         return {
@@ -162,8 +171,77 @@ export default class AlottaDotties {
 		}.bind(this));
 	}
 
-    attachEvents() {
+	attachMobileEvents() {
 
+		this.stage.addEventListener('touchmove',
+			function dotTouchMove(e) {
+				let currentX = (e.changedTouches[0].clientX - this.stage.offsetLeft);
+				let currentY = (e.changedTouches[0].clientY - this.stage.offsetTop);
+
+				if(this.touchIsDown){
+					this.clearLines();
+					this.startDrawLine(this.touchStartX, this.touchStartY, this.currentDotColor);
+					this.completeLine(currentX, currentY);
+				}
+				e.preventDefault();
+			}.bind(this),
+		false);
+	}
+	addDotMobileEvents(dot){
+		// Mobile Test
+		dot.addEventListener('touchenter',
+			function dotTouchEnter(e) {
+				console.log('mobile touch enter');
+				e.preventDefault();
+			}.bind(this),
+		false);
+
+		dot.addEventListener('touchstart',
+			function dotTouchStart(e) {
+				console.log('mobile touch start-------------');
+				console.log('ClientX and Y: ', e.touches[0].clientX, e.touches[0].clientY);
+				console.log('targetTop: ', e.target.offsetTop + this.dotSize/2);
+				console.log('targetLeft: ', e.target.offsetLeft + this.dotSize/2);
+
+				let	computedStyle = getComputedStyle(e.target, null);
+
+				this.currentDotColor = computedStyle.color;
+				this.touchStartY = (e.target.offsetTop + this.dotSize/2) + this.touchTextAdjustmentY;
+				this.touchStartX = (e.target.offsetLeft + this.dotSize/2) + this.touchTextAdjustmentX;
+				this.touchIsDown = true;
+				this.targetGroup.push(e.target);
+
+				e.preventDefault();
+			}.bind(this),
+		false);
+
+		dot.addEventListener('touchend',
+			function dotTouchEnd(e) {
+				console.log('mobile touch end');
+				console.log('--------------------')
+				console.log(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+				this.touchIsDown = false;
+				e.preventDefault();
+			}.bind(this),
+		false);
+
+		dot.addEventListener('mouseover',
+			function dotTouchOver(e) {
+				console.log('mobile mouse over');
+				e.preventDefault();
+			}.bind(this),
+		false);
+		//
+		// dot.addEventListener('mouseout',
+		// 	function dotTouchEnd(e) {
+		// 		console.log('mobile mouse out');
+		// 		e.preventDefault();
+		// 	}.bind(this),
+		// false);
+		// end mobile test
+	}
+
+    attachEvents() {
         this.stage.addEventListener('mouseup', function stageMouseUp(e) {
             if (this.targetGroup.length > 1 && this.mouseIsDown && this.areDotsTheSame(this.targetGroup)) {
                 let msg = this.messages.successMessage,
@@ -216,28 +294,6 @@ export default class AlottaDotties {
 	}
 
 	addDotEvents(dot){
-
-		// Mobile Test
-		dot.addEventListener('touchenter',
-			function dotMouseEnter(e) {
-				console.log('mobile touch enter');
-			}.bind(this),
-		false);
-
-		dot.addEventListener('touchstart',
-			function dotMouseDown(e) {
-				console.log('mobile touch start');
-			}.bind(this),
-		false);
-
-		dot.addEventListener('touchend',
-			function dotMouseDown(e) {
-				console.log('mobile touch end');
-			}.bind(this),
-		false);
-
-		// end mobile test
-
 		dot.addEventListener('mousedown',
 			function dotMouseDown(e) {
 				let y = e.target.offsetTop + this.dotSize/2,
@@ -294,6 +350,7 @@ export default class AlottaDotties {
 		this.stage.appendChild(dot);
 		this.dotDivs.push(dot);
 		this.addDotEvents(dot);
+		this.addDotMobileEvents(dot);
 		this.addAnimation('zoomInDown', dot);
 	}
 
