@@ -2,7 +2,7 @@ var alertify = require('alertify.js');
 import Messages from './components/Messages';
 import Sounds from './components/SoundUrls';
 
-export default class AlottaDotties {
+export default class HexDots {
     constructor() {
         this.init();
     }

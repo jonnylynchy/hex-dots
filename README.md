@@ -27,7 +27,7 @@ Navigate to http://localhost:8080/dist/index.html
 - ... More features to come, see TODO.
 
 [The latest version is up on Heroku]
-[The latest version is up on Heroku]: https://hex-dots.herokuapp.com/
+[The latest version is up on Heroku]: https://hexdots.herokuapp.com/
 
 `This is completely non-functioning on mobile... I'm working on that.`
 
