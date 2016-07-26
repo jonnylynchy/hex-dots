@@ -1,4 +1,5 @@
 var alertify = require('alertify.js');
+import botVoice from './audio/bot-voice.mp3';
 
 export default class AlottaDotties {
     constructor() {
@@ -45,12 +46,17 @@ export default class AlottaDotties {
         this.sounds = {
             successSound: 'https://www.freesound.org/data/previews/317/317480_4766646-lq.mp3',
             errorSound: 'https://www.freesound.org/data/previews/344/344687_6211528-lq.mp3',
-			squareSound: 'https://www.freesound.org/data/previews/213/213659_862453-lq.mp3'
+			squareSound: 'https://www.freesound.org/data/previews/213/213659_862453-lq.mp3',
+			robotVoice: botVoice
 		}
 
         this.audio = new Audio();
         this.audio.src = this.sounds.successSound;
         this.audio.load();
+
+		this.robotVoiceAudio = new Audio();
+		this.robotVoiceAudio.src = this.sounds.robotVoice;
+		this.robotVoiceAudio.load();
 
 		this.addDotsToStage();
 
@@ -60,20 +66,7 @@ export default class AlottaDotties {
 		this.attachMobileEvents();
 	}
 
-    createCanvas() {
-        const canvas = document.createElement('canvas'),
-            ctx = canvas.getContext('2d');
-
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        this.stage.appendChild(canvas);
-
-        return {
-            ctx: ctx,
-            canvas: canvas
-        };
-    }
-
+	// Initial Dots
 	addDotsToStage(){
 		// Grid (Columns * Rows)
 		let dotPixels = this.dotSize + this.dotPadding + 10;
@@ -98,31 +91,22 @@ export default class AlottaDotties {
 		this.showStartUpMessages();
 	}
 
-    updateScore(num) {
-        this.score += num;
-        this.scoreDiv.innerHTML = this.score;
+	// Canvas
+    createCanvas() {
+        const canvas = document.createElement('canvas'),
+            ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        this.stage.appendChild(canvas);
+
+        return {
+            ctx: ctx,
+            canvas: canvas
+        };
     }
 
-    setSoundsStop(time) {
-        setTimeout(function soundTimeout() {
-            this.stopSounds()
-        }.bind(this), time);
-    }
-
-    stopSounds() {
-        this.audio.pause();
-        this.audio.currentTime = 0;
-    }
-
-	playSound(sound, time, stopTime = 500){
-		this.audio.src = sound;
-		this.audio.load();
-        this.audio.currentTime = time;
-        this.audio.play();
-        this.setSoundsStop(stopTime);
-	}
-
-    startDrawLine(x, y, color) {
+	startDrawLine(x, y, color) {
         this.canvas.ctx.beginPath();
         this.canvas.ctx.moveTo(x, y);
         this.canvas.ctx.lineWidth = 4;
@@ -138,20 +122,51 @@ export default class AlottaDotties {
         this.canvas.ctx.clearRect(0, 0, this.canvas.canvas.width, this.canvas.canvas.height);
     }
 
+	// Score
+    updateScore(num) {
+        this.score += num;
+        this.scoreDiv.innerHTML = this.score;
+    }
+
+	// Audio
+    setSoundsStop(time, audioInstance) {
+        setTimeout(() => {
+            this.stopSounds(audioInstance);
+        }, time);
+    }
+
+    stopSounds(audioInstance) {
+        this[audioInstance].pause();
+        this[audioInstance].currentTime = 0;
+    }
+
+	playSound(sound, audioInstance, time, stopTime = 500, playRate = 1){
+		this[audioInstance].src = sound;
+		this[audioInstance].load();
+        this[audioInstance].currentTime = time;
+		this[audioInstance].playbackRate = playRate
+        this[audioInstance].play();
+        this.setSoundsStop(stopTime, audioInstance);
+	}
+
+	// Messages
 	showMessage(message, delay){
 		alertify.logPosition("top left");
 		alertify.delay(delay);
 		alertify.log(message);
+		this.playSound(this.sounds.robotVoice, 'robotVoiceAudio', 1, 2500, 1.6);
 	}
 
 	showSuccessMessage(message){
 		alertify.logPosition("top left");
 		alertify.success(message);
+		this.playSound(this.sounds.robotVoice, 'robotVoiceAudio', 1, 1500);
 	}
 
 	showErrorMessage(message){
 		alertify.logPosition("top right");
 		alertify.error(message);
+		this.playSound(this.sounds.robotVoice, 'robotVoiceAudio', 1, 1500);
 	}
 
 	showStartUpMessages(){
@@ -160,21 +175,22 @@ export default class AlottaDotties {
 			showDelay = 0;
 
 		alertify.logPosition("top left");
-		messages.forEach(function(message){
+		messages.forEach((message) => {
 			setTimeout(
-				function showStartUpMessage(){
+				() => {
 					this.showMessage(message, messageDelay);
-				}.bind(this),
+				},
 				showDelay
 			);
 			showDelay += messageDelay;
-		}.bind(this));
+		});
 	}
 
+	// Mobile Events
 	attachMobileEvents() {
 
 		this.stage.addEventListener('touchmove',
-			function dotTouchMove(e) {
+			(e) => {
 				let currentX = (e.changedTouches[0].clientX - this.stage.offsetLeft);
 				let currentY = (e.changedTouches[0].clientY - this.stage.offsetTop);
 
@@ -184,20 +200,21 @@ export default class AlottaDotties {
 					this.completeLine(currentX, currentY);
 				}
 				e.preventDefault();
-			}.bind(this),
+			},
 		false);
 	}
-	addDotMobileEvents(dot){
+
+	addMobileEventsToDot(dot){
 		// Mobile Test
 		dot.addEventListener('touchenter',
-			function dotTouchEnter(e) {
+			(e) => {
 				console.log('mobile touch enter');
 				e.preventDefault();
-			}.bind(this),
+			},
 		false);
 
 		dot.addEventListener('touchstart',
-			function dotTouchStart(e) {
+			(e) => {
 				console.log('mobile touch start-------------');
 				console.log('ClientX and Y: ', e.touches[0].clientX, e.touches[0].clientY);
 				console.log('targetTop: ', e.target.offsetTop + this.dotSize/2);
@@ -212,37 +229,23 @@ export default class AlottaDotties {
 				this.targetGroup.push(e.target);
 
 				e.preventDefault();
-			}.bind(this),
+			},
 		false);
 
 		dot.addEventListener('touchend',
-			function dotTouchEnd(e) {
+			(e) => {
 				console.log('mobile touch end');
 				console.log('--------------------')
 				console.log(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
 				this.touchIsDown = false;
 				e.preventDefault();
-			}.bind(this),
+			},
 		false);
-
-		dot.addEventListener('mouseover',
-			function dotTouchOver(e) {
-				console.log('mobile mouse over');
-				e.preventDefault();
-			}.bind(this),
-		false);
-		//
-		// dot.addEventListener('mouseout',
-		// 	function dotTouchEnd(e) {
-		// 		console.log('mobile mouse out');
-		// 		e.preventDefault();
-		// 	}.bind(this),
-		// false);
-		// end mobile test
 	}
 
+	// Events
     attachEvents() {
-        this.stage.addEventListener('mouseup', function stageMouseUp(e) {
+        this.stage.addEventListener('mouseup', (e) => {
             if (this.targetGroup.length > 1 && this.mouseIsDown && this.areDotsTheSame(this.targetGroup)) {
                 let msg = this.messages.successMessage,
                     num = this.targetGroup.length;
@@ -254,30 +257,47 @@ export default class AlottaDotties {
                 this.updateScore(num);
 
                 // Remove connected dots
-                this.targetGroup.forEach(function removeConnectedDots(removeMe) {
+                this.targetGroup.forEach((removeMe) => {
                     this.removeDot(removeMe);
-                }.bind(this));
+                });
 
                 // Show messasge, if square, remove all of color
                 if (!isSquare) {
 					let success = msg + ' You got ' + num + ' hex dots!'
 					this.showSuccessMessage(success);
-					this.playSound(this.sounds.successSound, 1);
+					this.playSound(this.sounds.successSound, 'audio', 1);
                 } else {
 					this.showSuccessMessage(this.messages.squareMessage);
-					this.playSound(this.sounds.squareSound, 0, 1500);
-					this.removeColor(squareColor);
+					this.playSound(this.sounds.squareSound, 'audio', 0, 1500);
+					this.removeDotsOfColor(squareColor);
                 }
 
             } else {
 				this.showErrorMessage(this.messages.errorMessage);
-                this.playSound(this.sounds.errorSound, 0);
+                this.playSound(this.sounds.errorSound, 'audio', 0);
             }
             this.clearLines();
             this.targetGroup = [];
             this.mouseIsDown = false;
-        }.bind(this));
+        });
     }
+
+	// DOM Management
+	addDot(position){
+		let dot = document.createElement('div'),
+			colorIdx = Math.ceil(Math.random() * (this.colors.length) - 1),
+			color = this.colors[colorIdx];
+
+		dot.className = 'dot ' + color;
+		dot.draggable = false;
+		dot.style.left = position.left + 'px';
+		dot.style.top = position.top + 'px';
+		this.stage.appendChild(dot);
+		this.dotDivs.push(dot);
+		this.addDotEvents(dot);
+		this.addMobileEventsToDot(dot);
+		this.addAnimation('zoomInDown', dot);
+	}
 
 	removeDot(dot) {
 		let position = {
@@ -286,16 +306,16 @@ export default class AlottaDotties {
 			},
 			dotIndex = this.dotDivs.indexOf(dot);
 
-
 		this.stage.removeChild(dot);
 		this.dotDivs.splice(dotIndex, 1);
 
 		this.addDot(position);
 	}
 
+
 	addDotEvents(dot){
 		dot.addEventListener('mousedown',
-			function dotMouseDown(e) {
+			(e) => {
 				let y = e.target.offsetTop + this.dotSize/2,
 					x = e.target.offsetLeft + this.dotSize/2,
 					computedStyle = getComputedStyle(e.target, null),
@@ -307,10 +327,10 @@ export default class AlottaDotties {
 				e.preventDefault();
 				this.startDrawLine(x + textAdjustment, y-1, color);
 
-			}.bind(this),
+			},
 			false);
 		dot.addEventListener('mouseenter',
-			function dotMouseEnter(e) {
+			(e) => {
 				if (this.mouseIsDown) {
 					let y = e.target.offsetTop + this.dotSize/2,
 						x = e.target.offsetLeft + this.dotSize/2,
@@ -335,65 +355,30 @@ export default class AlottaDotties {
 					}
 				}
 				e.preventDefault();
-			}.bind(this),
-			false);
+			},
+		false);
 	}
 
-	addDot(position){
-		let dot = document.createElement('div');
-		let colorIdx = Math.ceil(Math.random() * (this.colors.length) - 1);
-		let color = this.colors[colorIdx];
-		dot.className = 'dot ' + color;
-		dot.draggable = false;
-		dot.style.left = position.left + 'px';
-		dot.style.top = position.top + 'px';
-		this.stage.appendChild(dot);
-		this.dotDivs.push(dot);
-		this.addDotEvents(dot);
-		this.addDotMobileEvents(dot);
-		this.addAnimation('zoomInDown', dot);
-	}
-
-	timedEvent(dot, funcName) {
-
-	}
-
-	addAnimation(animation, dot) {
-		dot.className += ' ' + animation + ' animated';
-		setTimeout(function animationTimeout(){
-			this.removeAnimation(animation, dot);
-		}.bind(this), 1000);
-	}
-
-	removeAnimation(animation, dot){
-		let dotClasses = dot.className.split(' ').filter(
-			function(classname){
-				return classname !== animation && classname !== 'animated';
-			}
-		);
-
-		dot.className = dotClasses.join(" ");
-	}
-
-    removeColor(color) {
+	removeDotsOfColor(color) {
         let dotsOfColor = Array.from(document.querySelectorAll('.' + color));
 
         // Update Score and remove dots
         this.updateScore(dotsOfColor.length);
 
-        dotsOfColor.forEach(function removeDots(dot) {
+        dotsOfColor.forEach((dot) => {
             this.removeDot(dot);
-        }.bind(this));
+        });
 
     }
 
     areDotsTheSame(dots) {
-        let dotColors = dots.reduce(function reduceDotColors(dotClasses, dot) {
+        let dotColors = dots.reduce((dotClasses, dot) => {
             dotClasses.push(dot.className.substring(4));
             return dotClasses;
         }, []);
 
-        return !!dotColors.reduce(function reduceEqualColors(a, b) {
+		// Reduce equal colors
+        return !!dotColors.reduce((a, b) => {
             return (a === b) ? a : NaN;
         });
     }
@@ -402,7 +387,7 @@ export default class AlottaDotties {
         if (dots.length !== 4)
             return false;
 
-        let vectorArray = dots.map(function mapDotPositions(dot) {
+        let vectorArray = dots.map((dot) => {
             return {
                 top: dot.offsetTop,
                 left: dot.offsetLeft
@@ -417,7 +402,25 @@ export default class AlottaDotties {
         return this.isRectangleAnyOrder(a, b, c, d);
     }
 
-    // tests if angle abc is a right angle
+	// Animations
+	addAnimation(animation, dot) {
+		dot.className += ' ' + animation + ' animated';
+		setTimeout(() => {
+			this.removeAnimation(animation, dot);
+		}, 1000);
+	}
+
+	removeAnimation(animation, dot){
+		let dotClasses = dot.className.split(' ').filter(
+			(classname) => {
+				return classname !== animation && classname !== 'animated';
+			}
+		);
+
+		dot.className = dotClasses.join(" ");
+	}
+
+    // Math Utils
     isOrthogonal(a, b, c) {
         return (b.left - a.left) * (b.left - c.left) + (b.top - a.top) * (b.top - c.top) === 0;
     }

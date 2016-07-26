@@ -52,6 +52,13 @@ module.exports = {
 			    query: {
 			        name: 'font/[hash].[ext]'
 			    }
+			},
+			{
+				test: /\.mp3$/,
+				loader: 'file-loader',
+				query: {
+			        name: 'audio/[hash].[ext]'
+			    }
 			}
         ]
     },
