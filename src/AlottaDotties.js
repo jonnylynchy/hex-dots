@@ -1,5 +1,6 @@
 var alertify = require('alertify.js');
-import botVoice from './audio/bot-voice.mp3';
+import Messages from './components/Messages';
+import Sounds from './components/SoundUrls';
 
 export default class AlottaDotties {
     constructor() {
@@ -30,32 +31,12 @@ export default class AlottaDotties {
 		this.touchTextAdjustmentY = -2;
 		this.touchTextAdjustmentX = 2;
 
-        this.messages = {
-			startupMessages: [
-				"Would you like to play a game?",
-				"Click and drag a hex dot to connect to other hex dots of the same color.",
-				"You can chain hex dots together for extra points.",
-				"If you connect 4 as a square, all dots of the same color will vanish!",
-				"Ready? Go!"
-			],
-            successMessage: "Nice.",
-            errorMessage: "Hey, you can't do that.",
-            squareMessage: "Great Job. You cleared a color."
-        }
-
-        this.sounds = {
-            successSound: 'https://www.freesound.org/data/previews/317/317480_4766646-lq.mp3',
-            errorSound: 'https://www.freesound.org/data/previews/344/344687_6211528-lq.mp3',
-			squareSound: 'https://www.freesound.org/data/previews/213/213659_862453-lq.mp3',
-			robotVoice: botVoice
-		}
-
         this.audio = new Audio();
-        this.audio.src = this.sounds.successSound;
+        this.audio.src = Sounds.successSound;
         this.audio.load();
 
 		this.robotVoiceAudio = new Audio();
-		this.robotVoiceAudio.src = this.sounds.robotVoice;
+		this.robotVoiceAudio.src = Sounds.robotVoice;
 		this.robotVoiceAudio.load();
 
 		this.addDotsToStage();
@@ -154,23 +135,23 @@ export default class AlottaDotties {
 		alertify.logPosition("top left");
 		alertify.delay(delay);
 		alertify.log(message);
-		this.playSound(this.sounds.robotVoice, 'robotVoiceAudio', 1, 2500, 1.6);
+		this.playSound(Sounds.robotVoice, 'robotVoiceAudio', 1, 2500, 1.6);
 	}
 
 	showSuccessMessage(message){
 		alertify.logPosition("top left");
 		alertify.success(message);
-		this.playSound(this.sounds.robotVoice, 'robotVoiceAudio', 1, 1500);
+		this.playSound(Sounds.robotVoice, 'robotVoiceAudio', 1, 1500);
 	}
 
 	showErrorMessage(message){
 		alertify.logPosition("top right");
 		alertify.error(message);
-		this.playSound(this.sounds.robotVoice, 'robotVoiceAudio', 1, 1500);
+		this.playSound(Sounds.robotVoice, 'robotVoiceAudio', 1, 1500);
 	}
 
 	showStartUpMessages(){
-		let messages = this.messages.startupMessages,
+		let messages = Messages.startupMessages,
 			messageDelay = 3500,
 			showDelay = 0;
 
@@ -190,7 +171,7 @@ export default class AlottaDotties {
 	attachMobileEvents() {
 
 		this.stage.addEventListener('touchmove',
-			(e) => {
+			e => {
 				let currentX = (e.changedTouches[0].clientX - this.stage.offsetLeft);
 				let currentY = (e.changedTouches[0].clientY - this.stage.offsetTop);
 
@@ -207,14 +188,14 @@ export default class AlottaDotties {
 	addMobileEventsToDot(dot){
 		// Mobile Test
 		dot.addEventListener('touchenter',
-			(e) => {
+			e => {
 				console.log('mobile touch enter');
 				e.preventDefault();
 			},
 		false);
 
 		dot.addEventListener('touchstart',
-			(e) => {
+			e => {
 				console.log('mobile touch start-------------');
 				console.log('ClientX and Y: ', e.touches[0].clientX, e.touches[0].clientY);
 				console.log('targetTop: ', e.target.offsetTop + this.dotSize/2);
@@ -233,7 +214,7 @@ export default class AlottaDotties {
 		false);
 
 		dot.addEventListener('touchend',
-			(e) => {
+			e => {
 				console.log('mobile touch end');
 				console.log('--------------------')
 				console.log(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
@@ -245,9 +226,9 @@ export default class AlottaDotties {
 
 	// Events
     attachEvents() {
-        this.stage.addEventListener('mouseup', (e) => {
+        this.stage.addEventListener('mouseup', e => {
             if (this.targetGroup.length > 1 && this.mouseIsDown && this.areDotsTheSame(this.targetGroup)) {
-                let msg = this.messages.successMessage,
+                let msg = Messages.successMessage,
                     num = this.targetGroup.length;
 
                 let isSquare = this.doDotsFormSquare(this.targetGroup),
@@ -265,16 +246,16 @@ export default class AlottaDotties {
                 if (!isSquare) {
 					let success = msg + ' You got ' + num + ' hex dots!'
 					this.showSuccessMessage(success);
-					this.playSound(this.sounds.successSound, 'audio', 1);
+					this.playSound(Sounds.successSound, 'audio', 1);
                 } else {
-					this.showSuccessMessage(this.messages.squareMessage);
-					this.playSound(this.sounds.squareSound, 'audio', 0, 1500);
+					this.showSuccessMessage(Messages.squareMessage);
+					this.playSound(Sounds.squareSound, 'audio', 0, 1500);
 					this.removeDotsOfColor(squareColor);
                 }
 
             } else {
-				this.showErrorMessage(this.messages.errorMessage);
-                this.playSound(this.sounds.errorSound, 'audio', 0);
+				this.showErrorMessage(Messages.errorMessage);
+                this.playSound(Sounds.errorSound, 'audio', 0);
             }
             this.clearLines();
             this.targetGroup = [];
@@ -315,7 +296,7 @@ export default class AlottaDotties {
 
 	addDotEvents(dot){
 		dot.addEventListener('mousedown',
-			(e) => {
+			e => {
 				let y = e.target.offsetTop + this.dotSize/2,
 					x = e.target.offsetLeft + this.dotSize/2,
 					computedStyle = getComputedStyle(e.target, null),
@@ -330,7 +311,7 @@ export default class AlottaDotties {
 			},
 			false);
 		dot.addEventListener('mouseenter',
-			(e) => {
+			e => {
 				if (this.mouseIsDown) {
 					let y = e.target.offsetTop + this.dotSize/2,
 						x = e.target.offsetLeft + this.dotSize/2,
@@ -387,7 +368,7 @@ export default class AlottaDotties {
         if (dots.length !== 4)
             return false;
 
-        let vectorArray = dots.map((dot) => {
+        let vectorArray = dots.map(dot => {
             return {
                 top: dot.offsetTop,
                 left: dot.offsetLeft
@@ -412,7 +393,7 @@ export default class AlottaDotties {
 
 	removeAnimation(animation, dot){
 		let dotClasses = dot.className.split(' ').filter(
-			(classname) => {
+			classname => {
 				return classname !== animation && classname !== 'animated';
 			}
 		);
