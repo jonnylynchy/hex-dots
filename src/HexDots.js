@@ -10,6 +10,7 @@ export default class HexDots {
 	init(){
         this.scoreDiv = document.querySelector(".score");
 		this.stage = document.querySelector(".stage");
+		this.audioControl = document.querySelector(".hexbot-volume");
         this.colors = ['yellow', 'red', 'green', 'blue', 'purple'];
         this.dotDivs = [];
 		this.dotSize = 25;
@@ -99,8 +100,8 @@ export default class HexDots {
         this.canvas.ctx.stroke();
     }
 
-    clearLines() {
-        this.canvas.ctx.clearRect(0, 0, this.canvas.canvas.width, this.canvas.canvas.height);
+    clearLines(x = 0, y = 0, width = this.canvas.canvas.width, height = this.canvas.canvas.height) {
+        this.canvas.ctx.clearRect(x, y, width, height);
     }
 
 	// Score
@@ -109,7 +110,17 @@ export default class HexDots {
         this.scoreDiv.innerHTML = this.score;
     }
 
-	// Audio
+	// Audio / Sounds
+	silenceAllSounds() {
+		this.audio.volume = 0;
+		this.robotVoiceAudio.volume = 0;
+	}
+
+	raiseAllSounds() {
+		this.audio.volume = 1;
+		this.robotVoiceAudio.volume = 1;
+	}
+
     setSoundsStop(time, audioInstance) {
         setTimeout(() => {
             this.stopSounds(audioInstance);
@@ -135,19 +146,20 @@ export default class HexDots {
 		alertify.logPosition("top left");
 		alertify.delay(delay);
 		alertify.log(message);
-		this.playSound(Sounds.robotVoice, 'robotVoiceAudio', 1, 2500, 1.6);
+		let hbSoundIndex = Math.ceil(Math.random() * (Sounds.hexbotNormal.length) - 1)
+		this.playSound(Sounds.hexbotNormal[hbSoundIndex], 'robotVoiceAudio', 0, 2500, 1);
 	}
 
 	showSuccessMessage(message){
 		alertify.logPosition("top left");
 		alertify.success(message);
-		this.playSound(Sounds.robotVoice, 'robotVoiceAudio', 1, 1500);
+		this.playSound(Sounds.hexbotSuccess_1, 'robotVoiceAudio', 0, 2500, 1);
 	}
 
 	showErrorMessage(message){
 		alertify.logPosition("top right");
 		alertify.error(message);
-		this.playSound(Sounds.robotVoice, 'robotVoiceAudio', 1, 1500);
+		this.playSound(Sounds.hexbotError_1, 'robotVoiceAudio', 0, 3000, 1);
 	}
 
 	showStartUpMessages(){
@@ -226,6 +238,26 @@ export default class HexDots {
 
 	// Events
     attachEvents() {
+		// Audio control
+		this.audioControl.addEventListener('click', e => {
+			let volumeIsUp = e.target.className.indexOf('up');
+			let volumeClasses = e.target.className.split(' ').filter(
+				classname => {
+					return classname !== 'fa-volume-up' && classname !== 'fa-volume-down';
+				}
+			);
+			if(volumeIsUp > -1){
+				volumeClasses.push('fa-volume-down');
+				e.target.className = volumeClasses.join(' ');
+				this.silenceAllSounds();
+			} else {
+				volumeClasses.push('fa-volume-up');
+				e.target.className = volumeClasses.join(' ');
+				this.raiseAllSounds();
+			}
+		});
+
+		// Stage Mouseup / logic to determin if chained dots was success
         this.stage.addEventListener('mouseup', e => {
             if (this.targetGroup.length > 1 && this.mouseIsDown && this.areDotsTheSame(this.targetGroup)) {
                 let msg = Messages.successMessage,
@@ -301,7 +333,7 @@ export default class HexDots {
 					x = e.target.offsetLeft + this.dotSize/2,
 					computedStyle = getComputedStyle(e.target, null),
 					color = computedStyle.color,
-					textAdjustment = 4;
+					textAdjustment = 5.5;
 
 				this.mouseIsDown = true;
 				this.targetGroup.push(e.target);
@@ -320,7 +352,7 @@ export default class HexDots {
 						lastDotRealY = parseInt(lastDot.style.top, 10) + this.dotSize/2,
 						lastDotRealX = parseInt(lastDot.style.left, 10) + this.dotSize/2,
 						paddingAdjustment = 20,
-						textAdjustment = 4;
+						textAdjustment = 5.5;
 
 					// if the previous dot is more than a dotsize away,
 					// don't connect this dot

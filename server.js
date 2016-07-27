@@ -3,7 +3,7 @@ var express = require('express'),
 	serveStatic = require('serve-static');
 
 app.set('port', process.env.PORT || 3000);
-
+app.disable('etag');
 app.use(serveStatic('dist', {
 	'index': ['index.html', 'default.htm']
 }));

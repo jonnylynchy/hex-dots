@@ -99,6 +99,26 @@ header {
 	}
 }
 
+.hexbot-volume.dot {
+	width: 20px;
+    height: 20px;
+    position: absolute;
+    right: 15px;
+    top: -30px;
+
+	&:hover {
+		animation: none;
+	}
+
+	i.fa {
+		font-size: initial;
+		position: absolute;
+		top: 5px;
+		color: black;
+		left: 10px;
+	}
+}
+
 canvas {
   position: absolute;
   z-index: 0;
